@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FJU · Controle de Pontuação · Outubro/Novembro 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;0,9..144,700;1,9..144,500;1,9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4efdf;
+      --bg-deep: #ebe4cc;
+      --paper: #fffdf6;
+      --paper-2: #f8f3e4;
+      --ink: #0e2418;
+      --ink-soft: #3a5346;
+      --muted: #6a7560;
+      --line: #e4d9b4;
+      --wine: #0f4d2e;
+      --wine-deep: #0a3320;
+      --wine-soft: #145c38;
+      --gold: #c9a24a;
+      --gold-bright: #e2c275;
+      --gold-dim: #b38d4e;
+      --terracotta: #b07a38;
+      --olive: #3d6b45;
+      --teal: #1a5c48;
+      --plum: #2a4a38;
+      --shadow: 0 10px 30px rgba(10, 51, 32, 0.09);
+      --radius: 20px;
+      --header-h: 72px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Manrope", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 50% -80px, rgba(226, 194, 117, 0.30), transparent 60%),
+        radial-gradient(800px 400px at 100% 20%, rgba(15, 77, 46, 0.12), transparent 50%),
+        var(--bg);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 80L80 0' stroke='%23c9a24a' stroke-opacity='0.07' stroke-width='1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 20px 72px; }
+
+    header.app-header {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(10, 51, 32, 0.95);
+      color: #f8f3e4;
+      border-bottom: 3px solid var(--gold);
+    }
+    .header-inner {
+      max-width: 1120px; margin: 0 auto;
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .emblem {
+      width: 44px; height: 44px; flex: 0 0 44px;
+      border-radius: 12px;
+      background: linear-gradient(160deg, var(--gold-bright), var(--gold-dim));
+      color: var(--wine-deep);
+      display: grid; place-items: center;
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700; font-size: 13px; letter-spacing: 0.02em;
+      box-shadow: 0 0 0 2px rgba(255,250,244,0.15);
+    }
+    .header-text h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.15rem; font-weight: 650; letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .header-text p {
+      font-size: 0.78rem; color: #e6d9b0; font-weight: 500;
+    }
+
+    .hero {
+      margin-top: 28px;
+      background: linear-gradient(165deg, var(--wine-deep) 0%, var(--wine) 55%, #145c38 100%);
+      color: #fffdf6;
+      border-radius: 28px;
+      padding: 32px 28px 28px;
+      box-shadow: 0 18px 50px rgba(10, 51, 32, 0.32);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; right: -40px; top: -40px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(226,194,117,0.38), transparent 70%);
+    }
+    .hero-kicker {
+      font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold-bright); font-weight: 700; margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .hero-total {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(2.6rem, 8vw, 4.4rem);
+      font-weight: 700; letter-spacing: -0.04em; line-height: 0.95;
+      background: linear-gradient(180deg, #f3e3b5 0%, var(--gold-bright) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      position: relative; z-index: 1;
+    }
+    .hero-total span.unit {
+      font-size: 0.32em; letter-spacing: 0.08em; margin-left: 8px;
+      vertical-align: 0.55em; color: #f3e3b5; -webkit-text-fill-color: #f3e3b5;
+      font-family: "Manrope", sans-serif; font-weight: 700;
+    }
+    .hero-caption {
+      margin-top: 10px; color: #e6d9b0; font-weight: 500;
+      position: relative; z-index: 1;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-top: 14px;
+      position: relative; z-index: 1;
+    }
+    .kpi {
+      background: rgba(255,250,244,0.1);
+      border: 1px solid rgba(255,250,244,0.12);
+      border-radius: 16px; padding: 14px 16px;
+    }
+    .kpi .label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: #e6d9b0; font-weight: 700; }
+    .kpi .value { font-family: "Fraunces", Georgia, serif; font-size: 1.35rem; font-weight: 650; margin-top: 2px; }
+
+    .section { margin-top: 32px; }
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .section-head h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.45rem; font-weight: 650; letter-spacing: -0.03em;
+    }
+    .section-head p { color: var(--ink-soft); font-size: 0.92rem; }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    /* Podium */
+    .podium {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 12px; align-items: end;
+    }
+    .podium-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      text-align: center;
+      padding: 18px 12px 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .podium-card.first {
+      background: linear-gradient(180deg, #f8efd0, #fffdf6 55%);
+      border-color: #e2c275;
+      padding-top: 24px;
+      box-shadow: 0 14px 36px rgba(201, 162, 74, 0.28);
+    }
+    .medal {
+      font-size: 1.6rem; display: block; margin-bottom: 4px;
+    }
+    .podium-card .place {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      font-weight: 800; color: var(--muted);
+    }
+    .podium-card.first .place { color: var(--gold-dim); }
+    .podium-card h3 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.2rem; margin: 4px 0 2px;
+    }
+    .podium-card .pts {
+      font-weight: 800; font-size: 1.05rem; color: var(--wine);
+    }
+    .podium-card.first .pts { font-size: 1.2rem; }
+
+    .chart-box { position: relative; height: 300px; }
+    .chart-box.tall { height: 420px; }
+
+    /* Consolidation formula */
+    .formula {
+      display: flex; flex-wrap: wrap; gap: 8px 4px; align-items: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+    .formula button, .formula .eq, .formula .sum {
+      border: 0; background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font: inherit; font-weight: 700; font-size: 0.82rem;
+      color: var(--ink); cursor: pointer;
+    }
+    .formula button:hover { border-color: var(--wine); color: var(--wine); }
+    .formula .plus { color: var(--muted); padding: 0 2px; font-weight: 700; }
+    .formula .eq { cursor: default; background: transparent; border: 0; padding: 0 6px; color: var(--muted); }
+    .formula .sum {
+      background: var(--wine); color: #fffdf6; border-color: var(--wine);
+      cursor: default; font-size: 0.95rem;
+    }
+
+    /* Week tabs */
+    .tabs {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 10px; margin-bottom: 6px;
+      scrollbar-width: thin;
+    }
+    .tabs button {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink-soft);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tabs button[aria-selected="true"] {
+      background: var(--wine); color: #fffdf6; border-color: var(--wine);
+    }
+    .week-meta {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 12px; flex-wrap: wrap; margin: 8px 0 14px;
+    }
+    .week-meta h3 {
+      font-family: "Fraunces", Georgia, serif; font-size: 1.25rem;
+    }
+    .week-meta .week-total {
+      font-weight: 800; color: var(--wine); font-size: 1.15rem;
+    }
+    .audit-note {
+      font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;
+    }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th {
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); font-weight: 800;
+    }
+    td.num, th.num { text-align: right; }
+    td.calc { font-weight: 600; color: var(--ink-soft); }
+    tfoot td {
+      font-weight: 800; border-bottom: 0; padding-top: 12px;
+      font-size: 1.02rem; color: var(--wine);
+    }
+    tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+
+    .cat-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .ref-table td.pts-unit { font-weight: 700; color: var(--wine); white-space: nowrap; }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem; font-weight: 800;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px;
+      background: #ebe6c9; color: var(--ink-soft);
+      white-space: nowrap;
+    }
+    .badge.zero { background: #e8e4d0; color: var(--muted); }
+    .badge.used { background: #f3e3b5; color: var(--gold-dim); }
+
+    .validacao { display: grid; gap: 10px; }
+    .caveat {
+      display: grid; grid-template-columns: auto 1fr;
+      gap: 12px; align-items: start;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--gold);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .caveat-n {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--wine); color: #fffdf6;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 0.85rem;
+    }
+    .caveat h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 2px; }
+    .caveat p { color: var(--ink-soft); font-size: 0.9rem; }
+
+    footer {
+      margin-top: 40px; color: var(--muted); font-size: 0.82rem; text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .podium { grid-template-columns: 1fr; }
+      .podium-card.first { order: -1; }
+      .cat-layout { grid-template-columns: 1fr; }
+      .chart-box { height: 260px; }
+      .chart-box.tall { height: 380px; }
+      .hero { padding: 26px 20px 20px; border-radius: 22px; }
+      .formula button, .formula .sum { font-size: 0.75rem; padding: 6px 9px; }
+      /* stack audit table on small screens */
+      .audit-table thead { display: none; }
+      .audit-table, .audit-table tbody, .audit-table tr, .audit-table td, .audit-table tfoot, .audit-table tfoot td {
+        display: block; width: 100%;
+      }
+      .audit-table tr {
+        padding: 10px 0 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .audit-table td { border: 0; padding: 2px 0; text-align: left; }
+      .audit-table td.num { text-align: left; }
+      .audit-table td[data-label]::before {
+        content: attr(data-label) " · ";
+        color: var(--muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .audit-table td.atividade {
+        font-weight: 800; font-size: 0.98rem; margin-bottom: 2px;
+      }
+      .audit-table td.atividade::before { content: none; }
+      .audit-table td.subtotal { font-weight: 800; color: var(--wine); }
+      .audit-table tfoot td { padding-top: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="emblem" aria-hidden="true">FJU</div>
+      <div class="header-text">
+        <h1>Controle de Pontuação</h1>
+        <p>Tribo de Judá · Juventude · Outubro e novembro de 2026 · 8 semanas</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="hero" aria-label="Pontuação geral acumulada">
+      <div class="hero-kicker">Pontuação geral acumulada</div>
+      <div class="hero-total" id="heroTotal">0<span class="unit">pts</span></div>
+      <p class="hero-caption">Fechamento das oito semanas do ciclo · memória de cálculo conferida</p>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Média por semana</div>
+          <div class="value" id="kpiMedia">—</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Melhor semana</div>
+          <div class="value" id="kpiMelhor">—</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Semanas no ciclo</div>
+          <div class="value" id="kpiSemanas">8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="podio">
+      <div class="section-head">
+        <h2>Pódio das semanas</h2>
+        <p>As três maiores pontuações do ciclo</p>
+      </div>
+      <div class="podium" id="podium"></div>
+    </section>
+
+    <section class="section" id="semanal">
+      <div class="section-head">
+        <h2>Desempenho por semana</h2>
+        <p>Pontuação total de cada uma das oito semanas</p>
+      </div>
+      <div class="card">
+        <div class="chart-box">
+          <canvas id="chartSemanas" aria-label="Gráfico de barras da pontuação semanal"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="consolidacao">
+      <div class="section-head">
+        <h2>Consolidação do ciclo</h2>
+        <p>Soma das oito semanas — toque em uma parcela para abrir o detalhe</p>
+      </div>
+      <div class="card">
+        <div class="formula" id="formula" role="group" aria-label="Fórmula da pontuação total"></div>
+      </div>
+    </section>
+
+    <section class="section" id="detalhe">
+      <div class="section-head">
+        <h2>Memória de cálculo por semana</h2>
+        <p>Quantidade, valor unitário, cálculo e subtotal de cada lançamento</p>
+      </div>
+      <div class="card">
+        <div class="tabs" id="weekTabs" role="tablist" aria-label="Selecionar semana"></div>
+        <div id="weekPanel"></div>
+      </div>
+    </section>
+
+    <section class="section" id="atividades">
+      <div class="section-head">
+        <h2>Pontuação por atividade</h2>
+        <p>Consolidado de todas as semanas, só com itens que tiveram lançamento</p>
+      </div>
+      <div class="cat-layout">
+        <div class="card">
+          <div class="chart-box tall">
+            <canvas id="chartAtividades" aria-label="Gráfico da pontuação por atividade"></canvas>
+          </div>
+        </div>
+        <div class="card" style="overflow-x:auto">
+          <table id="tabelaAtividades">
+            <thead>
+              <tr>
+                <th>Atividade</th>
+                <th class="num">Qtd.</th>
+                <th class="num">Pontos</th>
+                <th class="num">% do total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="referencia">
+      <div class="section-head">
+        <h2>Tabela de pontuação de referência</h2>
+        <p>Os 16 critérios oficiais do ciclo, com o acumulado quando houve ocorrência</p>
+      </div>
+      <div class="card" style="overflow-x:auto">
+        <table class="ref-table" id="tabelaReferencia">
+          <thead>
+            <tr>
+              <th>Atividade / critério</th>
+              <th class="num">Pontos</th>
+              <th>Unidade</th>
+              <th class="num">No ciclo</th>
+              <th class="num">Pontos no ciclo</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="validacao">
+      <div class="section-head">
+        <h2>Pontos para validação</h2>
+        <p>Premissas adotadas neste fechamento — vale conferir antes de encerrar o ciclo</p>
+      </div>
+      <div class="validacao" id="validacaoLista"></div>
+    </section>
+
+    <footer>
+      FJU · Fechamento Outubro/Novembro 2026 · Painel para consulta e conferência da memória de cálculo
+    </footer>
+  </div>
+
+  <script>
+  /* ============================================================
+     DADOS DO CICLO — edite este objeto para incluir novas semanas
+     Totais e gráficos são calculados a partir dos lançamentos.
+     ============================================================ */
+  const DADOS = {
+    titulo: "Controle de Pontuação FJU",
+    periodo: "Outubro/Novembro 2026",
+    regras: [
+      { id: "jovem", nome: "Jovem novo ou afastado", pontos: 80000, unidade: "Por pessoa", aliases: ["Jovem novo", "Jovem afastado"] },
+      { id: "tribo", nome: "Tribo mais cheia às 16:15 (acima de 10 pessoas)", pontos: 10000, unidade: "Bônus único na semana", aliases: ["Bônus — tribo mais cheia", "Tribo mais cheia"] },
+      { id: "evangelizacao", nome: "Evangelização (Pé no Bairro / Núcleo / EVG Cultura / Ponto de fé)", pontos: 40000, unidade: "Por participação", aliases: ["Evangelização"] },
+      { id: "libertacao-regular", nome: "Reunião de libertação — participante regular", pontos: 20000, unidade: "Por pessoa", aliases: ["Libertação — participantes regulares", "Libertação"] },
+      { id: "libertacao-convidado", nome: "Reunião de libertação — convidado", pontos: 50000, unidade: "Por convidado", aliases: [] },
+      { id: "algo-a-mais", nome: "Algo a Mais", pontos: 80000, unidade: "Por participação", aliases: ["Algo a Mais"] },
+      { id: "meditacao", nome: "Meditação — Vencendo a Mim Mesma", pontos: 1000, unidade: "Por participação", aliases: ["Meditação"] },
+      { id: "faxina", nome: "Ajudar na limpeza da igreja (faxina)", pontos: 30000, unidade: "Por participação", aliases: ["Faxina"] },
+      { id: "limpeza-unisocial", nome: "Limpeza pós-evento UNISOCIAL KIDS", pontos: 30000, unidade: "Por participação", aliases: [] },
+      { id: "esporte", nome: "Esporte", pontos: 8000, unidade: "Por pessoa", aliases: ["Esporte", "Esportes"] },
+      { id: "refrigerante", nome: "Doação de refrigerante 2L", pontos: 10000, unidade: "Por unidade", aliases: ["Refrigerante 2L"] },
+      { id: "copos", nome: "Pacote de copos descartáveis 200 ml", pontos: 10000, unidade: "Por pacote", aliases: ["Pacote de copos", "Copo descartável"] },
+      { id: "voluntario-unisocial", nome: "Voluntário no evento UNISOCIAL KIDS (limpeza/portão/monitor/mídia)", pontos: 60000, unidade: "Por pessoa", aliases: ["Voluntários UNISOCIAL KIDS", "Unisocial Kids"] },
+      { id: "talents", nome: "TALENTS — declamação do Salmo (24/10)", pontos: 20000, unidade: "Por participação", aliases: [] },
+      { id: "vigilia", nome: "Vigília", pontos: 5000, unidade: "Por pessoa (participante/enviada)", aliases: ["Vigília"] },
+      { id: "quiz", nome: "Quiz", pontos: 1000, unidade: "Lançamento na semana 8", aliases: ["Quiz"] }
+    ],
+    semanas: [
+      {
+        numero: 1,
+        nome: "Semana 1",
+        rotulo: null,
+        itens: [
+          { atividade: "Faxina", regraId: "faxina", quantidade: 5, pontosUnidade: 30000 },
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 1, pontosUnidade: 40000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 15, pontosUnidade: 20000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 3, pontosUnidade: 1000 }
+        ]
+      },
+      {
+        numero: 2,
+        nome: "Semana 2",
+        rotulo: null,
+        itens: [
+          { atividade: "Faxina", regraId: "faxina", quantidade: 4, pontosUnidade: 30000 },
+          { atividade: "Jovem novo", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 11, pontosUnidade: 20000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 2, pontosUnidade: 1000 },
+          { atividade: "Pacote de copos", regraId: "copos", quantidade: 1, pontosUnidade: 10000 }
+        ]
+      },
+      {
+        numero: 3,
+        nome: "Semana 3",
+        rotulo: null,
+        itens: [
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 7, pontosUnidade: 40000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 16, pontosUnidade: 20000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 2, pontosUnidade: 1000 },
+          { atividade: "Refrigerante 2L", regraId: "refrigerante", quantidade: 1, pontosUnidade: 10000 },
+          { atividade: "Pacote de copos", regraId: "copos", quantidade: 4, pontosUnidade: 10000 },
+          { atividade: "Faxina", regraId: "faxina", quantidade: 4, pontosUnidade: 30000 },
+          { atividade: "Pontos extras informados", regraId: null, quantidade: null, pontosUnidade: null, pontosDiretos: 750, observacao: "750 pontos lançados diretamente" }
+        ]
+      },
+      {
+        numero: 4,
+        nome: "Semana 4",
+        rotulo: "Atualizada",
+        itens: [
+          { atividade: "Jovem novo", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 3, pontosUnidade: 40000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 14, pontosUnidade: 20000 },
+          { atividade: "Voluntários UNISOCIAL KIDS", regraId: "voluntario-unisocial", quantidade: 9, pontosUnidade: 60000, observacao: "9 voluntários do evento, não limpeza pós-evento" }
+        ]
+      },
+      {
+        numero: 5,
+        nome: "Semana 5",
+        rotulo: "01/11",
+        itens: [
+          { atividade: "Jovem novo", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 2, pontosUnidade: 40000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 19, pontosUnidade: 20000 },
+          { atividade: "Algo a Mais", regraId: "algo-a-mais", quantidade: 4, pontosUnidade: 80000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 4, pontosUnidade: 1000 },
+          { atividade: "Pacote de copos", regraId: "copos", quantidade: 1, pontosUnidade: 10000 }
+        ]
+      },
+      {
+        numero: 6,
+        nome: "Semana 6",
+        rotulo: "07/11",
+        itens: [
+          { atividade: "Algo a Mais", regraId: "algo-a-mais", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Jovem novo", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 2, pontosUnidade: 40000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 13, pontosUnidade: 20000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 3, pontosUnidade: 1000 },
+          { atividade: "Pacote de copos", regraId: "copos", quantidade: 1, pontosUnidade: 10000 },
+          { atividade: "Esporte", regraId: "esporte", quantidade: 4, pontosUnidade: 8000 }
+        ]
+      },
+      {
+        numero: 7,
+        nome: "Semana 7",
+        rotulo: "14/11",
+        itens: [
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 9, pontosUnidade: 20000 },
+          { atividade: "Algo a Mais", regraId: "algo-a-mais", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 3, pontosUnidade: 1000 }
+        ]
+      },
+      {
+        numero: 8,
+        nome: "Semana 8",
+        rotulo: "Última semana",
+        itens: [
+          { atividade: "Vigília", regraId: "vigilia", quantidade: 15, pontosUnidade: 5000, observacao: "5.000 pontos por pessoa" },
+          { atividade: "Jovem afastado", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 14, pontosUnidade: 20000 },
+          { atividade: "Meditação", regraId: "meditacao", quantidade: 1, pontosUnidade: 1000 },
+          { atividade: "Bônus — tribo mais cheia", regraId: "tribo", quantidade: 1, pontosUnidade: 10000, observacao: "11 jovens; critério acima de 10 pessoas às 16:15" },
+          { atividade: "Quiz", regraId: "quiz", quantidade: 1, pontosUnidade: 1000 }
+        ]
+      }
+    ],
+    validacao: [
+      {
+        titulo: "Libertação lançada como participante regular",
+        texto: "Todas as libertações do ciclo foram contabilizadas a 20.000 pontos por pessoa (participante regular). Não houve lançamento de convidado a 50.000 pontos."
+      },
+      {
+        titulo: "UNISOCIAL da semana 4 como voluntariado",
+        texto: "Os 9 da semana 4 foram considerados voluntários do evento UNISOCIAL KIDS, a 60.000 pontos cada (9 × 60.000 = 540.000), e não limpeza pós-evento a 30.000 pontos."
+      },
+      {
+        titulo: "Vigília a 5.000 pontos por pessoa",
+        texto: "Na semana 8, a vigília foi calculada a 5.000 pontos por pessoa, com 15 participantes (15 × 5.000 = 75.000), e não como bônus único de 5.000 para o evento."
+      },
+      {
+        titulo: "Semana 4 usa apenas os números atualizados",
+        texto: "O fechamento da semana 4 considera só o levantamento atualizado: 1 jovem novo, 3 evangelizações, 14 libertações e 9 voluntários UNISOCIAL. Os dados preliminares foram substituídos e não entram na soma."
+      }
+    ]
+  };
+
+  const nf = new Intl.NumberFormat("pt-BR");
+  const nfDec = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const fmt = (n) => nf.format(n);
+  const fmtDec = (n) => nfDec.format(n);
+
+  const subtotal = (item) =>
+    item.pontosDiretos != null ? item.pontosDiretos : (item.quantidade || 0) * (item.pontosUnidade || 0);
+
+  const totalSemana = (semana) => semana.itens.reduce((acc, item) => acc + subtotal(item), 0);
+
+  const calcular = (item) => {
+    if (item.pontosDiretos != null) return `${fmt(item.pontosDiretos)} (lançamento direto)`;
+    return `${fmt(item.quantidade)} × ${fmt(item.pontosUnidade)}`;
+  };
+
+  const semanas = DADOS.semanas.map((s) => ({ ...s, total: totalSemana(s) }));
+  const totalGeral = semanas.reduce((acc, s) => acc + s.total, 0);
+  const media = totalGeral / semanas.length;
+  const melhor = semanas.reduce((a, b) => (a.total >= b.total ? a : b));
+
+  function animateNumber(el, value, suffixHtml) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      el.innerHTML = fmt(value) + suffixHtml;
+      return;
+    }
+    const start = performance.now();
+    const duration = 1100;
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.innerHTML = fmt(Math.round(value * eased)) + suffixHtml;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  animateNumber(document.getElementById("heroTotal"), totalGeral, '<span class="unit">pts</span>');
+  document.getElementById("kpiMedia").textContent = fmtDec(media) + " pts";
+  document.getElementById("kpiMelhor").textContent = melhor.nome + " · " + fmt(melhor.total);
+  document.getElementById("kpiSemanas").textContent = String(semanas.length);
+
+  /* Pódio */
+  const ranking = [...semanas].sort((a, b) => b.total - a.total);
+  const medals = [
+    { place: "1º lugar", icon: "🥇", cls: "first" },
+    { place: "2º lugar", icon: "🥈", cls: "second" },
+    { place: "3º lugar", icon: "🥉", cls: "third" }
+  ];
+  const top3 = ranking.slice(0, 3);
+  const podiumOrder = [top3[1], top3[0], top3[2]]; // silver, gold, bronze visually
+  const medalOf = (s) => medals[top3.indexOf(s)];
+  document.getElementById("podium").innerHTML = podiumOrder.map((s) => {
+    const m = medalOf(s);
+    return `<article class="podium-card ${m.cls}">
+      <span class="medal" aria-hidden="true">${m.icon}</span>
+      <div class="place">${m.place}</div>
+      <h3>${s.nome}${s.rotulo ? " · " + s.rotulo : ""}</h3>
+      <div class="pts">${fmt(s.total)} pts</div>
+    </article>`;
+  }).join("");
+
+  /* Fórmula de consolidação */
+  const formulaEl = document.getElementById("formula");
+  formulaEl.innerHTML = semanas.map((s, i) => {
+    const btn = `<button type="button" data-semana="${s.numero}" title="Abrir ${s.nome}">${s.nome}: ${fmt(s.total)}</button>`;
+    return (i ? `<span class="plus" aria-hidden="true">+</span>` : "") + btn;
+  }).join("") + `<span class="eq">=</span><span class="sum">${fmt(totalGeral)} pts</span>`;
+
+  /* Abas de semana */
+  let semanaAtiva = semanas[0].numero;
+  const tabsEl = document.getElementById("weekTabs");
+  const panelEl = document.getElementById("weekPanel");
+
+  function renderSemana(num) {
+    semanaAtiva = num;
+    [...tabsEl.querySelectorAll("button")].forEach((b) => {
+      const on = b.dataset.semana === String(num);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      if (on) {
+        const left = b.offsetLeft - (tabsEl.clientWidth - b.offsetWidth) / 2;
+        tabsEl.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+      }
+    });
+    const s = semanas.find((x) => x.numero === num);
+    const titulo = s.nome + (s.rotulo ? " — " + s.rotulo : "");
+    const rows = s.itens.map((item) => {
+      const qtd = item.quantidade == null ? "—" : fmt(item.quantidade);
+      const unit = item.pontosUnidade == null ? "—" : fmt(item.pontosUnidade);
+      const obs = item.observacao ? `<div class="audit-note" style="margin:4px 0 0">${item.observacao}</div>` : "";
+      return `<tr>
+        <td class="atividade" data-label="Atividade">${item.atividade}${obs}</td>
+        <td class="num" data-label="Quantidade">${qtd}</td>
+        <td class="num" data-label="Valor unitário">${unit}</td>
+        <td class="calc" data-label="Cálculo">${calcular(item)}</td>
+        <td class="num subtotal" data-label="Subtotal">${fmt(subtotal(item))}</td>
+      </tr>`;
+    }).join("");
+    panelEl.innerHTML = `
+      <div class="week-meta">
+        <h3>${titulo}</h3>
+        <div class="week-total">${fmt(s.total)} pts</div>
+      </div>
+      <p class="audit-note">Memória de cálculo: quantidade × valor unitário = subtotal. A soma dos subtotais confere o total da semana.</p>
+      <div style="overflow-x:auto">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Atividade</th>
+              <th class="num">Quantidade</th>
+              <th class="num">Valor unitário</th>
+              <th>Cálculo</th>
+              <th class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Total da ${s.nome}</td>
+              <td class="num">${fmt(s.total)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>`;
+  }
+
+  tabsEl.innerHTML = semanas.map((s) =>
+    `<button type="button" role="tab" data-semana="${s.numero}" aria-selected="false">${s.nome}</button>`
+  ).join("");
+  tabsEl.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b) renderSemana(Number(b.dataset.semana));
+  });
+  formulaEl.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-semana]");
+    if (!b) return;
+    renderSemana(Number(b.dataset.semana));
+    document.getElementById("detalhe").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  renderSemana(melhor.numero);
+
+  /* Por atividade */
+  const porAtividade = {};
+  for (const s of semanas) {
+    for (const item of s.itens) {
+      const chave = item.atividade;
+      if (!porAtividade[chave]) porAtividade[chave] = { nome: chave, quantidade: 0, pontos: 0, direto: false };
+      porAtividade[chave].pontos += subtotal(item);
+      if (item.pontosDiretos != null) {
+        porAtividade[chave].direto = true;
+        porAtividade[chave].quantidade += 1;
+      } else {
+        porAtividade[chave].quantidade += item.quantidade || 0;
+      }
+    }
+  }
+  const atividades = Object.values(porAtividade).sort((a, b) => b.pontos - a.pontos);
+
+  const tbodyAt = document.querySelector("#tabelaAtividades tbody");
+  tbodyAt.innerHTML = atividades.map((a) =>
+    `<tr>
+      <td>${a.nome}</td>
+      <td class="num">${fmt(a.quantidade)}</td>
+      <td class="num">${fmt(a.pontos)}</td>
+      <td class="num">${fmtDec(Math.round((a.pontos / totalGeral) * 1000) / 10)}%</td>
+    </tr>`
+  ).join("");
+  document.querySelector("#tabelaAtividades tfoot").innerHTML =
+    `<tr><td>Total</td><td class="num">—</td><td class="num">${fmt(totalGeral)}</td><td class="num">100%</td></tr>`;
+
+  /* Referência */
+  const cicloPorRegra = {};
+  for (const s of semanas) {
+    for (const item of s.itens) {
+      if (!item.regraId) continue;
+      if (!cicloPorRegra[item.regraId]) cicloPorRegra[item.regraId] = { quantidade: 0, pontos: 0 };
+      cicloPorRegra[item.regraId].pontos += subtotal(item);
+      cicloPorRegra[item.regraId].quantidade += item.quantidade || 0;
+    }
+  }
+  document.querySelector("#tabelaReferencia tbody").innerHTML = DADOS.regras.map((r) => {
+    const c = cicloPorRegra[r.id];
+    const used = c && c.pontos > 0;
+    return `<tr>
+      <td>${r.nome}</td>
+      <td class="num pts-unit">${fmt(r.pontos)}</td>
+      <td>${r.unidade}</td>
+      <td class="num">${used ? fmt(c.quantidade) : `<span class="badge zero">Sem lançamento</span>`}</td>
+      <td class="num">${used ? fmt(c.pontos) : "—"}</td>
+    </tr>`;
+  }).join("");
+
+  /* Validação */
+  document.getElementById("validacaoLista").innerHTML = DADOS.validacao.map((v, i) =>
+    `<article class="caveat">
+      <div class="caveat-n">${i + 1}</div>
+      <div><h3>${v.titulo}</h3><p>${v.texto}</p></div>
+    </article>`
+  ).join("");
+
+  /* Gráficos */
+  const palette = ["#0f4d2e", "#c9a24a", "#145c38", "#e2c275", "#0a3320", "#3d6b45", "#b38d4e", "#1a6b4a", "#8f6b2e", "#207645", "#d4b978", "#0f3d28", "#5a6b38", "#c7a669"];
+  const weekColors = semanas.map((s) => s.numero === melhor.numero ? "#c9a24a" : "#0f4d2e");
+
+  Chart.defaults.font.family = "'Manrope', system-ui, sans-serif";
+  Chart.defaults.color = "#3a5346";
+
+  const tooltipBR = {
+    callbacks: {
+      label: (ctx) => ` ${fmt(ctx.parsed.y ?? ctx.parsed.x)} pts`
+    }
+  };
+
+  new Chart(document.getElementById("chartSemanas"), {
+    type: "bar",
+    data: {
+      labels: semanas.map((s) => s.nome),
+      datasets: [{
+        label: "Pontos",
+        data: semanas.map((s) => s.total),
+        backgroundColor: weekColors,
+        borderRadius: { topLeft: 5, topRight: 5, bottomLeft: 0, bottomRight: 0 },
+        borderSkipped: false,
+        maxBarThickness: 56,
+        categoryPercentage: 0.72,
+        barPercentage: 0.88
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: tooltipBR
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => fmt(v) },
+          grid: { color: "rgba(180, 170, 120, 0.28)" }
+        },
+        x: {
+          grid: { display: false },
+          ticks: {
+            autoSkip: false,
+            maxRotation: 40,
+            minRotation: 0,
+            callback: function(valor) {
+              const nome = this.getLabelForValue(valor);
+              return (window.innerWidth < 640) ? nome.replace("Semana ", "S") : nome;
+            }
+          }
+        }
+      },
+      onClick: (_e, els) => {
+        if (!els.length) return;
+        renderSemana(semanas[els[0].index].numero);
+        document.getElementById("detalhe").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  });
+
+  new Chart(document.getElementById("chartAtividades"), {
+    type: "bar",
+    data: {
+      labels: atividades.map((a) => a.nome),
+      datasets: [{
+        label: "Pontos",
+        data: atividades.map((a) => a.pontos),
+        backgroundColor: atividades.map((_, i) => palette[i % palette.length]),
+        borderRadius: { topRight: 4, bottomRight: 4, topLeft: 0, bottomLeft: 0 },
+        borderSkipped: false,
+        maxBarThickness: 22
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${fmt(ctx.parsed.x)} pts`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { callback: (v) => fmt(v) },
+          grid: { color: "rgba(180, 170, 120, 0.28)" }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  /* Checagem no console: totais esperados do fechamento */
+  console.assert(totalGeral === 4846750, "Total geral divergente", totalGeral);
+  const esperados = [493000, 432000, 772750, 1020000, 874000, 545000, 263000, 447000];
+  semanas.forEach((s, i) => console.assert(s.total === esperados[i], "Semana " + s.numero, s.total));
+  </script>
+</body>
+</html>
