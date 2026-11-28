@@ -360,7 +360,7 @@
       <div class="emblem" aria-hidden="true">FJU</div>
       <div class="header-text">
         <h1>Controle de Pontuação</h1>
-        <p>Controle de pontos · Judá · Outubro e novembro de 2026 · 8 semanas</p>
+        <p>Tribo de Judá · Juventude · Outubro e novembro de 2026 · 9 semanas</p>
       </div>
     </div>
   </header>
@@ -369,7 +369,7 @@
     <section class="hero" aria-label="Pontuação geral acumulada">
       <div class="hero-kicker">Pontuação geral acumulada</div>
       <div class="hero-total" id="heroTotal">0<span class="unit">pts</span></div>
-      <p class="hero-caption">Fechamento das oito semanas do ciclo · memória de cálculo conferida</p>
+      <p class="hero-caption">Fechamento das nove semanas do ciclo · memória de cálculo conferida</p>
       <div class="kpi-grid">
         <div class="kpi">
           <div class="label">Média por semana</div>
@@ -381,7 +381,7 @@
         </div>
         <div class="kpi">
           <div class="label">Semanas no ciclo</div>
-          <div class="value" id="kpiSemanas">8</div>
+          <div class="value" id="kpiSemanas">9</div>
         </div>
       </div>
     </section>
@@ -397,7 +397,7 @@
     <section class="section" id="semanal">
       <div class="section-head">
         <h2>Desempenho por semana</h2>
-        <p>Pontuação total de cada uma das oito semanas</p>
+        <p>Pontuação total de cada uma das nove semanas</p>
       </div>
       <div class="card">
         <div class="chart-box">
@@ -409,7 +409,7 @@
     <section class="section" id="consolidacao">
       <div class="section-head">
         <h2>Consolidação do ciclo</h2>
-        <p>Soma das oito semanas — toque em uma parcela para abrir o detalhe</p>
+        <p>Soma das nove semanas — toque em uma parcela para abrir o detalhe</p>
       </div>
       <div class="card">
         <div class="formula" id="formula" role="group" aria-label="Fórmula da pontuação total"></div>
@@ -604,7 +604,7 @@
       {
         numero: 8,
         nome: "Semana 8",
-        rotulo: "Última semana",
+        rotulo: "21/11",
         itens: [
           { atividade: "Vigília", regraId: "vigilia", quantidade: 15, pontosUnidade: 5000, observacao: "5.000 pontos por pessoa" },
           { atividade: "Jovem afastado", regraId: "jovem", quantidade: 1, pontosUnidade: 80000 },
@@ -612,6 +612,17 @@
           { atividade: "Meditação", regraId: "meditacao", quantidade: 1, pontosUnidade: 1000 },
           { atividade: "Bônus — tribo mais cheia", regraId: "tribo", quantidade: 1, pontosUnidade: 10000, observacao: "11 jovens; critério acima de 10 pessoas às 16:15" },
           { atividade: "Quiz", regraId: "quiz", quantidade: 1, pontosUnidade: 1000 }
+        ]
+      },
+      {
+        numero: 9,
+        nome: "Semana 9",
+        rotulo: "28/11",
+        itens: [
+          { atividade: "Libertação — participantes regulares", regraId: "libertacao-regular", quantidade: 7, pontosUnidade: 20000 },
+          { atividade: "Evangelização", regraId: "evangelizacao", quantidade: 3, pontosUnidade: 40000 },
+          { atividade: "Algo a Mais", regraId: "algo-a-mais", quantidade: 1, pontosUnidade: 80000 },
+          { atividade: "Pacote de copos", regraId: "copos", quantidade: 1, pontosUnidade: 10000 }
         ]
       }
     ],
@@ -936,8 +947,8 @@
   });
 
   /* Checagem no console: totais esperados do fechamento */
-  console.assert(totalGeral === 4846750, "Total geral divergente", totalGeral);
-  const esperados = [493000, 432000, 772750, 1020000, 874000, 545000, 263000, 447000];
+  console.assert(totalGeral === 5196750, "Total geral divergente", totalGeral);
+  const esperados = [493000, 432000, 772750, 1020000, 874000, 545000, 263000, 447000, 350000];
   semanas.forEach((s, i) => console.assert(s.total === esperados[i], "Semana " + s.numero, s.total));
   </script>
 </body>
