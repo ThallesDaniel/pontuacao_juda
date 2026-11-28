@@ -688,7 +688,7 @@
   document.getElementById("kpiMelhor").textContent = melhor.nome + " · " + fmt(melhor.total);
   document.getElementById("kpiSemanas").textContent = String(semanas.length);
 
-  /* Pódio */
+  /* Pódio do mes */
   const ranking = [...semanas].sort((a, b) => b.total - a.total);
   const medals = [
     { place: "1º lugar", icon: "🥇", cls: "first" },
